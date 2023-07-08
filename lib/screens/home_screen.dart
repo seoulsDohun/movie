@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:movie/models/coming_soon_movie_model.dart';
 import 'package:movie/models/now_play_movie_model.dart';
 import 'package:movie/models/popular_movie_model.dart';
+import 'package:movie/screens/detail_screen.dart';
 import 'package:movie/services/api_service.dart';
 import 'package:movie/widgets/title_text_widget.dart';
 
@@ -157,25 +158,54 @@ class HomeScreen extends StatelessWidget {
         var popularMovie = snapshot.data![index];
         return Column(
           children: [
-            Container(
-              height: 160,
-              clipBehavior: Clip.hardEdge,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(15),
-                boxShadow: [
-                  BoxShadow(
-                    blurRadius: 15,
-                    offset: const Offset(10, 10),
-                    color: Colors.black.withOpacity(0.5),
+            GestureDetector(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  PageRouteBuilder(
+                    transitionsBuilder:
+                        (context, animation, secondaryAnimation, child) {
+                      var begin = const Offset(0, 0);
+                      var end = Offset.zero;
+                      var curve = Curves.ease;
+                      var tween = Tween(begin: begin, end: end)
+                          .chain(CurveTween(curve: curve));
+                      return SlideTransition(
+                        position: animation.drive(tween),
+                        child: child,
+                      );
+                    },
+                    pageBuilder: (context, animation, secondaryAnimation) =>
+                        DetailScreen(
+                      id: popularMovie.id,
+                      thumb: popularMovie.posterThumb,
+                    ),
                   ),
-                ],
-              ),
-              child: Image.network(
-                'https://image.tmdb.org/t/p/w500/${popularMovie.thumb}',
-                headers: const {
-                  "User-Agent":
-                      "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/110.0.0.0 Safari/537.36"
-                },
+                );
+              },
+              child: Hero(
+                tag: popularMovie.id,
+                child: Container(
+                  height: 160,
+                  clipBehavior: Clip.hardEdge,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(15),
+                    boxShadow: [
+                      BoxShadow(
+                        blurRadius: 15,
+                        offset: const Offset(10, 10),
+                        color: Colors.black.withOpacity(0.5),
+                      ),
+                    ],
+                  ),
+                  child: Image.network(
+                    'https://image.tmdb.org/t/p/w500/${popularMovie.thumb}',
+                    headers: const {
+                      "User-Agent":
+                          "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/110.0.0.0 Safari/537.36"
+                    },
+                  ),
+                ),
               ),
             ),
           ],
