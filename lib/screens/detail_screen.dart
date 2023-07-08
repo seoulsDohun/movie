@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
 class DetailScreen extends StatefulWidget {
@@ -13,31 +14,23 @@ class DetailScreen extends StatefulWidget {
 }
 
 class _DetailScreenState extends State<DetailScreen> {
-  late String heroTag;
-
-  @override
-  void initState() {
-    super.initState();
-    heroTag = widget.id;
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Stack(
         children: [
           Hero(
-            tag: heroTag,
-            child: Container(
+            tag: widget.id,
+            child: SizedBox(
               width: double.infinity,
               height: double.infinity,
-              decoration: BoxDecoration(
-                image: DecorationImage(
-                  image: NetworkImage(
-                    'https://image.tmdb.org/t/p/w500/${widget.thumb}',
-                  ),
-                  fit: BoxFit.cover,
+              child: CachedNetworkImage(
+                imageUrl: 'https://image.tmdb.org/t/p/w500/${widget.thumb}',
+                fit: BoxFit.cover,
+                placeholder: (context, url) => const Center(
+                  child: CircularProgressIndicator(),
                 ),
+                errorWidget: (context, url, error) => const Icon(Icons.error),
               ),
             ),
           ),
