@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:http/http.dart' as http;
 import 'package:movie/models/coming_soon_movie_model.dart';
+import 'package:movie/models/detail_movie_model.dart';
 import 'package:movie/models/now_play_movie_model.dart';
 import 'package:movie/models/popular_movie_model.dart';
 
@@ -58,6 +59,18 @@ class ApiService {
         comingSoonMovieInstances.add(ComingSoonModel.fromJson(comingSoonMovie));
       }
       return comingSoonMovieInstances;
+    }
+    throw Error();
+  }
+
+  /* 영화 상세 조회 */
+  static Future<DetailMovieModel> getDetailMovie(String id) async {
+    final url = Uri.parse('$baseUrl/$detailUrl?id=$id');
+    final response = await http.get(url);
+
+    if (response.statusCode == 200) {
+      var detailMovieData = jsonDecode(response.body);
+      return DetailMovieModel.fromJson(detailMovieData);
     }
     throw Error();
   }

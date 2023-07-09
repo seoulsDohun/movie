@@ -68,7 +68,7 @@ class HomeScreen extends StatelessWidget {
                   future: nowPlayMovies,
                   builder: (context, snapshot) {
                     if (snapshot.hasData) {
-                      return movieList(snapshot);
+                      return movieList(snapshot, 'nowPlay');
                     }
                     return Container();
                   },
@@ -88,7 +88,7 @@ class HomeScreen extends StatelessWidget {
                   future: comingSoonMovies,
                   builder: (context, snapshot) {
                     if (snapshot.hasData) {
-                      return movieList(snapshot);
+                      return movieList(snapshot, 'soon');
                     }
                     return Container();
                   },
@@ -102,37 +102,55 @@ class HomeScreen extends StatelessWidget {
     );
   }
 
-  ListView movieList(AsyncSnapshot<List<dynamic>> snapshot) {
+  ListView movieList(AsyncSnapshot<List<dynamic>> snapshot, String divCode) {
     return ListView.separated(
       itemCount: snapshot.data!.length,
       scrollDirection: Axis.horizontal,
       itemBuilder: (context, index) {
         var movie = snapshot.data![index];
+        String heroTag = '${divCode}_${movie.id}';
         return SizedBox(
           width: 150,
           child: Column(
             children: [
-              Container(
-                height: 150,
-                width: double.infinity,
-                clipBehavior: Clip.hardEdge,
-                decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(15),
-                    boxShadow: [
-                      BoxShadow(
-                        blurRadius: 15,
-                        offset: const Offset(5, 5),
-                        color: Colors.black.withOpacity(0.5),
+              GestureDetector(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    PageRouteBuilder(
+                      pageBuilder: (context, animation, secondaryAnimation) =>
+                          DetailScreen(
+                        id: movie.id,
+                        thumb: movie.posterThumb,
+                        heroTag: heroTag,
                       ),
-                    ]),
-                child: FittedBox(
-                  fit: BoxFit.cover,
-                  child: Image.network(
-                    'https://image.tmdb.org/t/p/w500/${movie.thumb}',
-                    headers: const {
-                      "User-Agent":
-                          "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/110.0.0.0 Safari/537.36"
-                    },
+                    ),
+                  );
+                },
+                child: Hero(
+                  tag: heroTag,
+                  child: AnimatedContainer(
+                    duration: const Duration(milliseconds: 200),
+                    height: 150,
+                    width: double.infinity,
+                    clipBehavior: Clip.hardEdge,
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(15),
+                        boxShadow: [
+                          BoxShadow(
+                            blurRadius: 15,
+                            offset: const Offset(5, 5),
+                            color: Colors.black.withOpacity(0.5),
+                          ),
+                        ]),
+                    child: Image.network(
+                      'https://image.tmdb.org/t/p/w500/${movie.thumb}',
+                      fit: BoxFit.cover,
+                      headers: const {
+                        "User-Agent":
+                            "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/110.0.0.0 Safari/537.36"
+                      },
+                    ),
                   ),
                 ),
               ),
@@ -156,6 +174,7 @@ class HomeScreen extends StatelessWidget {
       scrollDirection: Axis.horizontal,
       itemBuilder: (context, index) {
         var popularMovie = snapshot.data![index];
+        String heroTag = 'popular_${popularMovie.id}';
         return Column(
           children: [
             GestureDetector(
@@ -167,12 +186,13 @@ class HomeScreen extends StatelessWidget {
                         DetailScreen(
                       id: popularMovie.id,
                       thumb: popularMovie.posterThumb,
+                      heroTag: heroTag,
                     ),
                   ),
                 );
               },
               child: Hero(
-                tag: popularMovie.id,
+                tag: heroTag,
                 child: Container(
                   height: 160,
                   clipBehavior: Clip.hardEdge,
